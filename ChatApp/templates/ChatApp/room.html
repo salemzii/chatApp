@@ -35,7 +35,7 @@
         
         const roomName = JSON.parse(document.getElementById('room-name').textContent);
         getmessages(roomName);
-        const chatSocket = new WebSocket(
+        const chatSocket = new ReconnectingWebSocket(
             'ws://'
             + window.location.host
             + '/ws/chat/'

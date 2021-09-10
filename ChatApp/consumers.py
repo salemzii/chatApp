@@ -2,21 +2,27 @@ import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from .models import Message, Group
+from django.shortcuts import redirect
+
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         #self.room_group_name =  f"chat_{self.room_name}" #'chat_%s' % self.room_name
-        self.grp_name, created = Group.objects.get_or_create(name=self.room_name)
+        try:
+            self.grp_name = Group.objects.get(name=self.room_name)
 
-        # Join room group
-        async_to_sync(self.channel_layer.group_add)(
-            self.grp_name.name,
-            self.channel_name
-        )
 
-        self.accept()
+                    # Join room group
+            async_to_sync(self.channel_layer.group_add)(
+                self.grp_name.name,
+                self.channel_name
+            )
 
+            self.accept()
+        except Exception as err:
+            print(f"error -----> {err}")
+            pass
 
 
     def disconnect(self, close_code):

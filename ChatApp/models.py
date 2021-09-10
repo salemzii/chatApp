@@ -6,12 +6,21 @@ from django.contrib.auth.models import User
 class Group(models.Model):
     name = models.CharField(max_length=101)
     created = models.DateTimeField(default=timezone.now)
-    members = models.ForeignKey(User, on_delete=models.DO_NOTHING,
-     null=True, blank=True)
+    private = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
 
+
+class Groupmember(models.Model):
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='groupmembers')
+    is_admin = models.BooleanField(default=False)
+    
+    def __str__(self):
+        return self.group.name
+
+    
 
 class Message(models.Model):
     author = models.ForeignKey(User, related_name='authormsg',
